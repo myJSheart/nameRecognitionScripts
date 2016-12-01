@@ -7,7 +7,7 @@
 
 // Step 1 Read all files from '/Users/chenxuzhao/Desktop/nameRecognitionProject/ner/json'
 const Promise = require('bluebird');
-const jsonFloder = '/Users/chenxuzhao/Desktop/nameRecognitionProject/ner/json/';
+const jsonFloder = '/Users/chenxuzhao/Desktop/nameRecognitionProject/private/tagged_files/json/';
 const destination_prefix = '/Users/chenxuzhao/Desktop/nameRecognitionProject/ner/results/';
 const fs = require('fs');
 const files_array = fs.readdirSync(jsonFloder);
