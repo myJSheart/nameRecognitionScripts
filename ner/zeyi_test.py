@@ -8,7 +8,7 @@ all_json_files = glob.glob(
 
 results_json_file_prefiex = '/Users/chenxuzhao/Desktop/nameRecognitionProject/ner/zeyi_results/'
 
-ZEYI_SERVER_PREFIX = ':8084/NameRecServer/nameString?name='
+ZEYI_SERVER_PREFIX = 'http://10.100.230.224:8084/NameRecServer/nameString?name='
 
 THRESHOLD = 0.6501
 
@@ -64,9 +64,9 @@ for json_file_name in all_json_files:
 
             link_area['true_name_score'] = true_name_score_array
 
-    result_name = json_file_name.split('/')[json_file_name.split('/').__len__() - 1]
-    with open(results_json_file_prefiex + result_name, 'w') as out_file:
-        json.dump(init_json, out_file)
+    # result_name = json_file_name.split('/')[json_file_name.split('/').__len__() - 1]
+    # with open(results_json_file_prefiex + result_name, 'w') as out_file:
+    #     json.dump(init_json, out_file)
 
 print('target_num --- ' + str(target_num) + '\n' + 'anchor_text_num --- ' + str(anchor_text_num))
 print('true_name_title_num --- ' + str(true_name_title_num) + '\n' + 'true_name_num --- ' + str(true_name_num))

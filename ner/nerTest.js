@@ -21,78 +21,99 @@ let hit_target_num_anchor_text = 0;
 let hit_target_num_true_name_title = 0;
 let hit_target_num_true_name = 0;
 
-const json_file_results = async(() => {
+const json_file_results = async.iterable(() => {
 
-  files_array.forEach(file => {
+  files_array.forEach((file, index) => {
+    console.log('file index -------------------------- ' + index+ '/' + files_array.length + ' ## ' + file);
     // json object that read from the file
     const file_json = jsonfile.readFileSync(jsonFloder + file);
     // Check whether this page is a target page
-    if (file_json['is-directory-page'] !== 'T') {
-      return;
+    if (file_json['is-directory-page'] === 'T') {
+      // The outlinks area in json
+      const outlinks_area = file_json['outlinks'];
+      // ################ start ###################
+      outlinks_area.forEach(link_area => {
+        if (link_area['is-target'] === 'T') {
+          target_num++;
+
+          const anchor_text = link_area['anchor_text'];
+          const true_name_title = link_area['true_name_title'];
+          const true_name = link_area['true_name'];
+
+          try {
+            link_area['anchor_text_ner'] = await(ner.getAsync({ port: 8080, host: 'localhost' }, anchor_text.replace(/[0-9+]/g, '').trim() ));
+            // console.dir(link_area['anchor_text_ner']);
+            link_area['anchor_text_ner'] = link_area['anchor_text_ner'].entities.PERSON;
+            if (link_area['anchor_text_ner'].length !== 0) {
+              hit_target_num_anchor_text++;
+              // console.dir(link_area['anchor_text_ner']);
+              // console.log(hit_target_num_anchor_text);
+            }
+            link_area['true_name_title_ner'] = await(ner.getAsync({ port: 8080, host: 'localhost' }, true_name_title.replace(/[0-9+]/g, '').trim() ));
+            // console.dir(link_area['true_name_title_ner']);
+            link_area['true_name_title_ner'] = link_area['true_name_title_ner'].entities.PERSON;
+            if (link_area['true_name_title_ner'].length !== 0) {
+              hit_target_num_true_name_title++;
+            }
+            link_area['true_name_ner'] = await(ner.getAsync({ port: 8080, host: 'localhost' }, true_name.replace(/[0-9+]/g, '').trim() ));
+            // console.dir(link_area['true_name_ner']);
+            link_area['true_name_ner'] = link_area['true_name_ner'].entities.PERSON;
+            if (link_area['true_name_ner'].length !== 0) {
+              hit_target_num_true_name++;
+            }
+          } catch (e) {
+            console.dir(e);
+          }
+        }
+      });
+      // ################ end ####################
     }
-    // The outlinks area in json
-    const outlinks_area = file_json['outlinks'];
-    // ################ start ###################
-    outlinks_area.forEach(link_area => {
-      if (link_area['is-target'] !== 'T') {
-        return;
-      }
-      target_num++;
 
-      const anchor_text = link_area['anchor_text'];
-      const true_name_title = link_area['true_name_title'];
-      const true_name = link_area['true_name'];
-
-      try {
-        link_area['anchor_text_ner'] = await(ner.getAsync({ port: 8080, host: 'localhost' }, anchor_text));
-        link_area['anchor_text_ner'] = link_area['anchor_text_ner'].entities.PERSON;
-        if (link_area['anchor_text_ner'].length !== 0) {
-          hit_target_num_anchor_text++;
-        }
-        link_area['true_name_title_ner'] = await(ner.getAsync({ port: 8080, host: 'localhost' }, true_name_title));
-        link_area['true_name_title_ner'] = link_area['true_name_title_ner'].entities.PERSON;
-        if (link_area['true_name_title_ner'].length !== 0) {
-          hit_target_num_true_name_title++;
-        }
-        link_area['true_name_ner'] = await(ner.getAsync({ port: 8080, host: 'localhost' }, true_name));
-        link_area['true_name_ner'] = link_area['true_name_ner'].entities.PERSON;
-        if (link_area['true_name_ner'].length !== 0) {
-          hit_target_num_true_name++;
-        }
-      } catch (e) {
-        console.dir(e);
-      }
-    });
-    // ################ end ####################
     // Write files
-    // console.log(file);
-    // jsonfile.writeFileSync(destination_prefix + file, file_json);
+    console.log(file);
+    jsonfile.writeFileSync(destination_prefix + file, file_json);
     console.log('target_num --- ' + target_num);
-    console.log('hit_target_num_anchor_text' + hit_target_num_anchor_text);
-    console.log('hit_target_num_true_name_title' + hit_target_num_true_name_title);
-    console.log('hit_target_num_true_name' + hit_target_num_true_name);
+    console.log('hit_target_num_anchor_text --- ' + hit_target_num_anchor_text);
+    console.log('hit_target_num_true_name_title --- ' + hit_target_num_true_name_title);
+    console.log('hit_target_num_true_name --- ' + hit_target_num_true_name);
   });
-
-  return [{
-    'target_num': target_num,
-    'hit_target_num_anchor_text': hit_target_num_anchor_text,
-    'hit_target_num_true_name_title': hit_target_num_true_name_title,
-    'hit_target_num_true_name': hit_target_num_true_name,
-  }];
-
-  console.log('target_num --- ' + target_num);
-  console.log('hit_target_num_anchor_text' + hit_target_num_anchor_text);
-  console.log('hit_target_num_true_name_title' + hit_target_num_true_name_title);
-  console.log('hit_target_num_true_name' + hit_target_num_true_name);
+  // console.log('target_num --- ' + target_num);
+  // console.log('hit_target_num_anchor_text' + hit_target_num_anchor_text);
+  // console.log('hit_target_num_true_name_title' + hit_target_num_true_name_title);
+  // console.log('hit_target_num_true_name' + hit_target_num_true_name);
+  //
+  // return [{
+  //   'target_num': target_num,
+  //   'hit_target_num_anchor_text': hit_target_num_anchor_text,
+  //   'hit_target_num_true_name_title': hit_target_num_true_name_title,
+  //   'hit_target_num_true_name': hit_target_num_true_name,
+  // }];
 });
 
-json_file_results()
-  .then((results) => {
-    console.dir(results);
-  })
-  .catch((error) => {
-    console.log(error);
-  });
+const program = async(
+  () => {
+    const iterator = json_file_results();
+    await (iterator.forEach(console.log));
+
+    return 'Down';
+  }
+);
+
+program()
+  .then(
+    (results) => {
+      console.log(results);
+    }
+  );
+  // .then(() => {
+  //   console.log('cccccc');
+  // })
+  // .then((results) => {
+  //   console.dir(results + 'ccc');
+  // })
+  // .catch((error) => {
+  //   console.log(error);
+  // });
 
 // let itemnum = 0;
 // files_array.forEach(file => {
