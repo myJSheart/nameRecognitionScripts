@@ -1,5 +1,5 @@
 import json
-file_name = 'f922c9dc-de0f-4de8-945e-b58ffd95ed20.json'
+file_name = 'bc1ea579-3944-4005-b548-0be047843421.json'
 with open(file_name) as orginal_file:
     orginal_json = json.load(orginal_file)
 
@@ -7,10 +7,10 @@ anchor_text_all = orginal_json['outlinks']
 for anchor_text in anchor_text_all:
     if anchor_text['is-target'] == 'T':
         try:
-            anchor_text['true_name'] = anchor_text['anchor_text'].split('_SS_URLSIM_ANCHOR_DELIMITER_TAG_')[1].strip()
+            anchor_text['true_name'] = anchor_text['anchor_text'].replace('Professor', '').strip()
+            anchor_text['true_name'] = anchor_text['anchor_text'].replace('Dr', '').strip()
         except:
-            anchor_text['true_name'] = anchor_text['anchor_text'].split('_SS_URLSIM_ANCHOR_DELIMITER_TAG_')[0].strip()    
-        anchor_text['true_name_title'] = anchor_text['true_name']
+            print('error')    
         # anchor_text['true_name_title'] = anchor_text['true_name_title'].split(
         #     '_SS_URLSIM_ANCHOR_DELIMITER_TAG_')[0].strip()
         # anchor_text['true_name'] = anchor_text['true_name_title'].replace('PhD', '')

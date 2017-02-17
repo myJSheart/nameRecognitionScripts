@@ -1,6 +1,6 @@
+import re
 import json
 import requests
-import re
 import struct
 from pprint import pprint
 
