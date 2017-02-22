@@ -75,6 +75,9 @@ export default class DOMTreeProcess {
 
   /**
    * get a score with represents the similarities between two nodes
+   * @param {cheerio} nodeOne       a node
+   * @param {cheerio} nodeTwo       a node
+   * @param {float} score           similar scores.
    */
   getSimilarityScore(nodeOne, nodeTwo) {
 
